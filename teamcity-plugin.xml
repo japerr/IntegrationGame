@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<teamcity-plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:shemas-jetbrains-com:teamcity-plugin-v1-xml">
+  <info>
+    <name>integration-game</name>
+    <display-name>Integration Game</display-name>
+    <version>@Version@</version>
+    <description>Earn points for successful commits. Loose points for breaking the build.</description>
+    <vendor>
+      <name>Patrick Kranz</name>
+      <url>http://github.com/patka</url>
+    </vendor>
+  </info>
+  <deployment use-separate-classloader="true" />
+</teamcity-plugin>
