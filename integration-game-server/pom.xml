@@ -11,18 +11,31 @@
   <dependencies>
 
     <dependency>
-      <groupId>org.jetbrains.teamcity</groupId>
-      <artifactId>server-api</artifactId>
-      <version>${teamcity-version}</version>
-      <scope>provided</scope>
+        <groupId>org.jetbrains.teamcity</groupId>
+        <artifactId>server-api</artifactId>
+        <version>${teamcity-version}</version>
+        <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.jetbrains.teamcity</groupId>
-      <artifactId>tests-support</artifactId>
-      <version>${teamcity-version}</version>
-      <scope>test</scope>
+        <groupId>org.jetbrains.teamcity</groupId>
+        <artifactId>tests-support</artifactId>
+        <version>${teamcity-version}</version>
+        <scope>test</scope>
     </dependency>
 
+    <dependency>
+        <groupId>com.intellij</groupId>
+        <artifactId>openapi</artifactId>
+        <version>7.0.3</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>1.8.5</version>
+        <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
