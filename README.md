@@ -1,4 +1,4 @@
-IntegrationGame [![Build Status](https://travis-ci.org/patka/IntegrationGame.png)](https://travis-ci.org/patka/IntegrationGame)
+Continuous Integration Game [![Build Status](https://travis-ci.org/patka/IntegrationGame.png)](https://travis-ci.org/patka/IntegrationGame)
 ===============
 
 Continuous Integration Game Plugin for TeamCity.
