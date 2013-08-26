@@ -3,7 +3,6 @@ package game.statistic;
 import game.persistence.ScoreDao;
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
-import jetbrains.buildServer.serverSide.CustomDataStorage;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.users.SUser;
@@ -23,6 +22,9 @@ public class BuildListener extends BuildServerAdapter {
 
     @Override
     public void buildFinished(SRunningBuild build) {
+        if (build.isPersonal()) {
+            return;
+        }
         if (build.getBuildStatus() == Status.NORMAL || build.getBuildStatus() == Status.WARNING) {
             addPointsToAllCommitters(build, 1);
         } else if (build.getBuildStatus() == Status.ERROR || build.getBuildStatus() == Status.FAILURE) {
@@ -31,7 +33,6 @@ public class BuildListener extends BuildServerAdapter {
     }
 
     private void addPointsToAllCommitters(SRunningBuild build, int points) {
-        CustomDataStorage storage = build.getBuildType().getCustomDataStorage("ci-game");
         UserSet<SUser> committers = build.getCommitters(SelectPrevBuildPolicy.SINCE_LAST_BUILD);
         for (SUser committer : committers.getUsers()) {
             this.scoreDao.addScore(committer, points);
