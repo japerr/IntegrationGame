@@ -37,7 +37,7 @@ public class ConfigurationController extends BaseController {
     @Nullable
     @Override
     protected ModelAndView doHandle(@NotNull HttpServletRequest httpServletRequest, @NotNull HttpServletResponse httpServletResponse) throws Exception {
-        if ("POST".equals(httpServletRequest.getMethod())) {
+        if (isPost(httpServletRequest)) {
             return post(httpServletRequest);
         } else {
             return get();
