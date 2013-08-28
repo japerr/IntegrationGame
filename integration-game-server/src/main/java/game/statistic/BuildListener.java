@@ -1,5 +1,6 @@
 package game.statistic;
 
+import game.persistence.ConfigurationDao;
 import game.persistence.ScoreDao;
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
@@ -14,15 +15,17 @@ import jetbrains.buildServer.vcs.SelectPrevBuildPolicy;
  */
 public class BuildListener extends BuildServerAdapter {
     private ScoreDao scoreDao;
+    private ConfigurationDao configurationDao;
 
-    public BuildListener(SBuildServer buildServer, ScoreDao scoreDao) {
+    public BuildListener(SBuildServer buildServer, ScoreDao scoreDao, ConfigurationDao configurationDao) {
         this.scoreDao = scoreDao;
+        this.configurationDao = configurationDao;
         buildServer.addListener(this);
     }
 
     @Override
     public void buildFinished(SRunningBuild build) {
-        if (build.isPersonal()) {
+        if (build.isPersonal() || !configurationDao.isEnabled(build.getBuildTypeId())) {
             return;
         }
         if (build.getBuildStatus() == Status.NORMAL || build.getBuildStatus() == Status.WARNING) {

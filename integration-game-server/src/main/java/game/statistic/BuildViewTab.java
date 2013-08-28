@@ -1,21 +1,14 @@
 package game.statistic;
 
-import game.domain.UserScore;
+import game.persistence.ConfigurationDao;
 import game.persistence.ScoreDao;
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.BuildPromotion;
-import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
-import jetbrains.buildServer.users.SUser;
-import jetbrains.buildServer.users.UserSet;
-import jetbrains.buildServer.vcs.SelectPrevBuildPolicy;
 import jetbrains.buildServer.web.openapi.ViewBuildTab;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,11 +16,13 @@ import java.util.Map;
  */
 public class BuildViewTab extends ViewBuildTab {
     private ScoreDao scoreDao;
+    private ConfigurationDao configuration;
 
     public BuildViewTab(final SBuildServer buildServer, final WebControllerManager manager,
-                        final ScoreDao scoreDao) {
+                        final ScoreDao scoreDao, ConfigurationDao config) {
         super("CI-Game", "integration-game", manager, "integration-game.jsp", buildServer);
         this.scoreDao = scoreDao;
+        this.configuration = config;
     }
 
     @Override
@@ -35,10 +30,12 @@ public class BuildViewTab extends ViewBuildTab {
                              @NotNull HttpServletRequest httpServletRequest,
                              @NotNull BuildPromotion buildPromotion) {
         stringObjectMap.put("scores", scoreDao.getScores());
+        stringObjectMap.put("configuration", configuration.getConfigurations());
     }
 
     @Override
     protected boolean isAvailable(@NotNull HttpServletRequest httpServletRequest, @NotNull BuildPromotion buildPromotion) {
-        return true;
+        String buildId = buildPromotion.getBuildTypeId();
+        return configuration.isEnabled(buildId);
     }
 }

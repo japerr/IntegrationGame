@@ -5,7 +5,9 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Patrick Kranz
@@ -29,13 +31,26 @@ public class ConfigurationDao {
         return configs;
     }
 
-    public void saveConfiguration(BuildConfiguration configuration) {
-        SBuildType build = buildServer.getProjectManager().findBuildTypeById(configuration.getBuildId());
-        if (build == null) {
-            throw new IllegalArgumentException("Build with id " + configuration.getBuildId() + " can not be found");
+    public Set<String> getBuildIds() {
+        Set<String> buildIds = new HashSet<String>();
+        for (SBuildType build : buildServer.getProjectManager().getAllBuildTypes()) {
+            buildIds.add(build.getBuildTypeId());
         }
-        build.getCustomDataStorage(STORAGE_KEY).putValue(ENABLED_KEY,
-                Boolean.toString(configuration.isEnabled()));
+        return buildIds;
+    }
+
+    public boolean isEnabled(String buildId) {
+        SBuildType type = buildServer.getProjectManager().findBuildTypeById(buildId);
+        String enabledString = type.getCustomDataStorage(STORAGE_KEY).getValue(ENABLED_KEY);
+        return parseBoolean(enabledString);
+    }
+
+    public void setEnabled(String buildId, boolean isEnabled) {
+        SBuildType build = buildServer.getProjectManager().findBuildTypeById(buildId);
+        if (build != null) {
+            build.getCustomDataStorage(STORAGE_KEY).putValue(ENABLED_KEY,
+                    Boolean.toString(isEnabled));
+        }
     }
 
     private boolean parseBoolean(String booleanValue) {
