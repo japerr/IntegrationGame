@@ -2,12 +2,9 @@ package game;
 
 import game.persistence.ConfigurationDao;
 import jetbrains.buildServer.web.openapi.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Enumeration;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Patrick Kranz
