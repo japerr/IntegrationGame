@@ -3,6 +3,7 @@ package game.controller;
 import game.persistence.ConfigurationDao;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
+import jetbrains.buildServer.web.openapi.PagePlaces;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
@@ -21,15 +22,12 @@ import java.util.Set;
 public class ConfigurationController extends BaseController {
     private static final String CONFIGURATION_URL = "/admin/configureCIGame.html";
 
-    private PluginDescriptor pluginDescriptor;
     private ConfigurationDao configurationDao;
 
     public ConfigurationController(final SBuildServer buildServer,
                                    final WebControllerManager controllerManager,
-                                   final PluginDescriptor pluginDescriptor,
                                    final ConfigurationDao configurationDao) {
         super(buildServer);
-        this.pluginDescriptor = pluginDescriptor;
         this.configurationDao = configurationDao;
         controllerManager.registerController(CONFIGURATION_URL, this);
     }
@@ -57,11 +55,12 @@ public class ConfigurationController extends BaseController {
         for (String remainingId : allBuildIds) {
             configurationDao.setEnabled(remainingId, false);
         }
-        return new ModelAndView(new RedirectView(CONFIGURATION_URL, true));
+
+        return new ModelAndView(new RedirectView("/admin/admin.html?item=configuration", true));
     }
 
     private ModelAndView get() {
-        return new ModelAndView(pluginDescriptor.getPluginResourcesPath("/configuration.jsp"),
+        return new ModelAndView("/admin/admin.html?item=configuration",
                 "configs", configurationDao.getConfigurations());
     }
 }

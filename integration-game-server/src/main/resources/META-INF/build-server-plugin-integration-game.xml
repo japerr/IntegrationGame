@@ -7,5 +7,6 @@
     <bean id="configurationController" class="game.controller.ConfigurationController" />
 
     <bean id="configurationDao" class="game.persistence.ConfigurationDao" />
+    <bean id="configurationAdminPage" class="game.ConfigurationAdminPage" />
 
 </beans>
