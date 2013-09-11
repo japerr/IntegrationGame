@@ -1,7 +1,7 @@
 package game.statistic;
 
-import game.persistence.ConfigurationDao;
-import game.persistence.ScoreDao;
+import game.persistence.BuildConfigurationDao;
+import game.persistence.UserScoreDao;
 import jetbrains.buildServer.serverSide.BuildPromotion;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.web.openapi.ViewBuildTab;
@@ -15,13 +15,13 @@ import java.util.Map;
  * @author Patrick Kranz
  */
 public class BuildViewTab extends ViewBuildTab {
-    private ScoreDao scoreDao;
-    private ConfigurationDao configuration;
+    private UserScoreDao userScoreDao;
+    private BuildConfigurationDao configuration;
 
     public BuildViewTab(final SBuildServer buildServer, final WebControllerManager manager,
-                        final ScoreDao scoreDao, ConfigurationDao config) {
+                        final UserScoreDao userScoreDao, BuildConfigurationDao config) {
         super("CI-Game", "integration-game", manager, "integration-game.jsp", buildServer);
-        this.scoreDao = scoreDao;
+        this.userScoreDao = userScoreDao;
         this.configuration = config;
     }
 
@@ -29,7 +29,7 @@ public class BuildViewTab extends ViewBuildTab {
     protected void fillModel(@NotNull Map<String, Object> stringObjectMap,
                              @NotNull HttpServletRequest httpServletRequest,
                              @NotNull BuildPromotion buildPromotion) {
-        stringObjectMap.put("scores", scoreDao.getScores());
+        stringObjectMap.put("scores", userScoreDao.getScores());
         stringObjectMap.put("configuration", configuration.getConfigurations());
     }
 

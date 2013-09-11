@@ -12,13 +12,13 @@ import java.util.Set;
 /**
  * @author Patrick Kranz
  */
-public class ConfigurationDao {
+public class BuildConfigurationDao {
     private static final String STORAGE_KEY = "ci-game";
     private static final String ENABLED_KEY = "game-enabled";
 
     private SBuildServer buildServer;
 
-    public ConfigurationDao(SBuildServer buildServer) {
+    public BuildConfigurationDao(SBuildServer buildServer) {
         this.buildServer = buildServer;
     }
 

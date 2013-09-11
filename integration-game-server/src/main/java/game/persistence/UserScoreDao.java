@@ -15,13 +15,13 @@ import static java.lang.Integer.parseInt;
 /**
  * @author Patrick Kranz
  */
-public class ScoreDao {
+public class UserScoreDao {
     public static final String PROPERTY_KEY = "ci-game-score";
 
     private final PropertyKey propertyKey;
     private final SBuildServer buildServer;
 
-    public ScoreDao(SBuildServer buildServer) {
+    public UserScoreDao(SBuildServer buildServer) {
         this.propertyKey = new SimplePropertyKey(PROPERTY_KEY);
         this.buildServer = buildServer;
     }

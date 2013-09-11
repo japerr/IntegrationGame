@@ -1,6 +1,6 @@
 package game.controller;
 
-import game.persistence.ConfigurationDao;
+import game.persistence.BuildConfigurationDao;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
@@ -20,13 +20,13 @@ import java.util.Set;
 public class ConfigurationController extends BaseController {
     private static final String CONFIGURATION_URL = "/admin/configureCIGame.html";
 
-    private ConfigurationDao configurationDao;
+    private BuildConfigurationDao buildConfigurationDao;
 
     public ConfigurationController(final SBuildServer buildServer,
                                    final WebControllerManager controllerManager,
-                                   final ConfigurationDao configurationDao) {
+                                   final BuildConfigurationDao buildConfigurationDao) {
         super(buildServer);
-        this.configurationDao = configurationDao;
+        this.buildConfigurationDao = buildConfigurationDao;
         controllerManager.registerController(CONFIGURATION_URL, this);
     }
 
@@ -41,17 +41,17 @@ public class ConfigurationController extends BaseController {
     }
 
     private ModelAndView post(HttpServletRequest request) {
-        Set<String> allBuildIds = configurationDao.getBuildIds();
+        Set<String> allBuildIds = buildConfigurationDao.getBuildIds();
         Enumeration<String> buildIds = request.getParameterNames();
         while (buildIds.hasMoreElements()) {
             String id = buildIds.nextElement();
             if (allBuildIds.contains(id)) {
-                configurationDao.setEnabled(id, true);
+                buildConfigurationDao.setEnabled(id, true);
                 allBuildIds.remove(id);
             }
         }
         for (String remainingId : allBuildIds) {
-            configurationDao.setEnabled(remainingId, false);
+            buildConfigurationDao.setEnabled(remainingId, false);
         }
 
         return new ModelAndView(new RedirectView("/admin/admin.html?item=configuration", true));
@@ -59,6 +59,6 @@ public class ConfigurationController extends BaseController {
 
     private ModelAndView get() {
         return new ModelAndView("/admin/admin.html?item=configuration",
-                "configs", configurationDao.getConfigurations());
+                "configs", buildConfigurationDao.getConfigurations());
     }
 }

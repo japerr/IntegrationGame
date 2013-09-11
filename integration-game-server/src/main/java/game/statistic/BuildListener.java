@@ -1,7 +1,7 @@
 package game.statistic;
 
-import game.persistence.ConfigurationDao;
-import game.persistence.ScoreDao;
+import game.persistence.BuildConfigurationDao;
+import game.persistence.UserScoreDao;
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
 import jetbrains.buildServer.serverSide.SBuildServer;
@@ -14,18 +14,18 @@ import jetbrains.buildServer.vcs.SelectPrevBuildPolicy;
  * @author Patrick Kranz
  */
 public class BuildListener extends BuildServerAdapter {
-    private ScoreDao scoreDao;
-    private ConfigurationDao configurationDao;
+    private UserScoreDao userScoreDao;
+    private BuildConfigurationDao buildConfigurationDao;
 
-    public BuildListener(SBuildServer buildServer, ScoreDao scoreDao, ConfigurationDao configurationDao) {
-        this.scoreDao = scoreDao;
-        this.configurationDao = configurationDao;
+    public BuildListener(SBuildServer buildServer, UserScoreDao userScoreDao, BuildConfigurationDao buildConfigurationDao) {
+        this.userScoreDao = userScoreDao;
+        this.buildConfigurationDao = buildConfigurationDao;
         buildServer.addListener(this);
     }
 
     @Override
     public void buildFinished(SRunningBuild build) {
-        if (build.isPersonal() || !configurationDao.isEnabled(build.getBuildTypeId())) {
+        if (build.isPersonal() || !buildConfigurationDao.isEnabled(build.getBuildTypeId())) {
             return;
         }
         if (build.getBuildStatus() == Status.NORMAL || build.getBuildStatus() == Status.WARNING) {
@@ -38,7 +38,7 @@ public class BuildListener extends BuildServerAdapter {
     private void addPointsToAllCommitters(SRunningBuild build, int points) {
         UserSet<SUser> committers = build.getCommitters(SelectPrevBuildPolicy.SINCE_LAST_BUILD);
         for (SUser committer : committers.getUsers()) {
-            this.scoreDao.addScore(committer, points);
+            this.userScoreDao.addScore(committer, points);
         }
     }
 }
