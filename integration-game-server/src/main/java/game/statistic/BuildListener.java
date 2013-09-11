@@ -14,6 +14,15 @@ import jetbrains.buildServer.vcs.SelectPrevBuildPolicy;
  * @author Patrick Kranz
  */
 public class BuildListener extends BuildServerAdapter {
+    /**
+     * We want the users to commit often in small deltas, so success score is low.
+     */
+    private static final int SUCCESS_SCORE = 1;
+    /**
+     * Build failure is considered a bad thing, therefore a rather high negative score.
+     */
+    private static final int FAILURE_SCORE = -5;
+
     private UserScoreDao userScoreDao;
     private BuildConfigurationDao buildConfigurationDao;
 
@@ -29,9 +38,9 @@ public class BuildListener extends BuildServerAdapter {
             return;
         }
         if (buildWasSuccessful(build)) {
-            addPointsToAllCommitters(build, 1);
+            addPointsToAllCommitters(build, SUCCESS_SCORE);
         } else if (buildHasFailed(build)) {
-            addPointsToAllCommitters(build, -5);
+            addPointsToAllCommitters(build, FAILURE_SCORE);
         }
     }
 
