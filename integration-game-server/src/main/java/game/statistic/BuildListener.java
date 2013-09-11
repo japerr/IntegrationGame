@@ -25,14 +25,26 @@ public class BuildListener extends BuildServerAdapter {
 
     @Override
     public void buildFinished(SRunningBuild build) {
-        if (build.isPersonal() || !buildConfigurationDao.isEnabled(build.getBuildTypeId())) {
+        if (buildShouldBeIgnored(build)) {
             return;
         }
-        if (build.getBuildStatus() == Status.NORMAL || build.getBuildStatus() == Status.WARNING) {
+        if (buildWasSuccessful(build)) {
             addPointsToAllCommitters(build, 1);
-        } else if (build.getBuildStatus() == Status.ERROR || build.getBuildStatus() == Status.FAILURE) {
+        } else if (buildHasFailed(build)) {
             addPointsToAllCommitters(build, -5);
         }
+    }
+
+    private boolean buildHasFailed(SRunningBuild build) {
+        return build.getBuildStatus() == Status.ERROR || build.getBuildStatus() == Status.FAILURE;
+    }
+
+    private boolean buildWasSuccessful(SRunningBuild build) {
+        return build.getBuildStatus() == Status.NORMAL || build.getBuildStatus() == Status.WARNING;
+    }
+
+    private boolean buildShouldBeIgnored(SRunningBuild build) {
+        return build.isPersonal() || !buildConfigurationDao.isEnabled(build.getBuildTypeId());
     }
 
     private void addPointsToAllCommitters(SRunningBuild build, int points) {
