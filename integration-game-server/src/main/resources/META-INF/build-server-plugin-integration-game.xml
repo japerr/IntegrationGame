@@ -4,9 +4,9 @@
     <bean id="buildViewTab" class="game.statistic.BuildViewTab" />
     <bean id="userScoreDao" class="game.persistence.UserScoreDao" />
     <bean id="buildListener" class="game.statistic.BuildListener" />
-    <bean id="configurationController" class="game.controller.ConfigurationController" />
+    <bean id="configurationController" class="game.admin.ConfigurationController" />
 
     <bean id="buildConfigurationDao" class="game.persistence.BuildConfigurationDao" />
-    <bean id="configurationAdminPage" class="game.ConfigurationAdminPage" />
+    <bean id="configurationAdminPage" class="game.admin.ConfigurationAdminPage" />
 
 </beans>

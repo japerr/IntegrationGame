@@ -15,12 +15,16 @@ import java.util.Map;
  * @author Patrick Kranz
  */
 public class BuildViewTab extends ViewBuildTab {
+    private static final String TAB_NAME = "CI-Game";
+    private static final String TAB_CODE = "integration-game";
+    private static final String JSP_PAGE = "integration-game.jsp";
+
     private UserScoreDao userScoreDao;
     private BuildConfigurationDao configuration;
 
     public BuildViewTab(final SBuildServer buildServer, final WebControllerManager manager,
                         final UserScoreDao userScoreDao, BuildConfigurationDao config) {
-        super("CI-Game", "integration-game", manager, "integration-game.jsp", buildServer);
+        super(TAB_NAME, TAB_CODE, manager, JSP_PAGE, buildServer);
         this.userScoreDao = userScoreDao;
         this.configuration = config;
     }
@@ -34,7 +38,8 @@ public class BuildViewTab extends ViewBuildTab {
     }
 
     @Override
-    protected boolean isAvailable(@NotNull HttpServletRequest httpServletRequest, @NotNull BuildPromotion buildPromotion) {
+    protected boolean isAvailable(@NotNull HttpServletRequest httpServletRequest,
+                                  @NotNull BuildPromotion buildPromotion) {
         String buildId = buildPromotion.getBuildTypeId();
         return configuration.isEnabled(buildId);
     }

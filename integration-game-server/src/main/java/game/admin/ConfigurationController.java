@@ -1,4 +1,4 @@
-package game.controller;
+package game.admin;
 
 import game.persistence.BuildConfigurationDao;
 import jetbrains.buildServer.controllers.BaseController;
@@ -14,11 +14,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Enumeration;
 import java.util.Set;
 
+import static game.admin.ConfigurationAdminPage.CONFIGURATION_KEY;
+
 /**
  * @author Patrick Kranz
  */
 public class ConfigurationController extends BaseController {
-    private static final String CONFIGURATION_URL = "/admin/configureCIGame.html";
+    public static final String ADMIN_URL = "/admin/admin.html?item=configuration";
+    private static final String CONTROLLER_URL = "/admin/configureCIGame.html";
 
     private BuildConfigurationDao buildConfigurationDao;
 
@@ -27,12 +30,13 @@ public class ConfigurationController extends BaseController {
                                    final BuildConfigurationDao buildConfigurationDao) {
         super(buildServer);
         this.buildConfigurationDao = buildConfigurationDao;
-        controllerManager.registerController(CONFIGURATION_URL, this);
+        controllerManager.registerController(CONTROLLER_URL, this);
     }
 
     @Nullable
     @Override
-    protected ModelAndView doHandle(@NotNull HttpServletRequest httpServletRequest, @NotNull HttpServletResponse httpServletResponse) throws Exception {
+    protected ModelAndView doHandle(@NotNull HttpServletRequest httpServletRequest,
+                                    @NotNull HttpServletResponse httpServletResponse) throws Exception {
         if (isPost(httpServletRequest)) {
             return post(httpServletRequest);
         } else {
@@ -54,11 +58,11 @@ public class ConfigurationController extends BaseController {
             buildConfigurationDao.setEnabled(remainingId, false);
         }
 
-        return new ModelAndView(new RedirectView("/admin/admin.html?item=configuration", true));
+        return new ModelAndView(new RedirectView(ADMIN_URL, true));
     }
 
     private ModelAndView get() {
-        return new ModelAndView("/admin/admin.html?item=configuration",
-                "configs", buildConfigurationDao.getConfigurations());
+        return new ModelAndView(ADMIN_URL,
+                CONFIGURATION_KEY, buildConfigurationDao.getConfigurations());
     }
 }
