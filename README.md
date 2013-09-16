@@ -19,10 +19,10 @@ To install the plugin, put the zip archive to 'plugins' dir under TeamCity data 
 ### Current State
 What is implemented is a very minimum viable product:
 
-Once installed you will have a new tab "CI-Game" in the build overview. It will show you in a very simple way the
-current score for all users. Currently, you earn one point for a good build and you loose five points for breaking
-the build. It is a very simple check, so if you commit in a broken build and it stays broken you will again loose
-five points. 
+Once installed you will have a new tab "CI-Game" on the build view for every build configuration the plugin is
+enabled for. It will show you in a very simple way the current score for all users. Currently, you earn one
+point for a good build and you loose five points for breaking the build. It is a very simple check, so if
+you commit in a broken build and it stays broken you will again loose five points. 
 
 Currently, there is no user mapping, so the username of the VCS needs to match the username in TeamCity for this
 to work.
