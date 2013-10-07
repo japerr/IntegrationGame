@@ -15,12 +15,13 @@ import java.util.Enumeration;
 import java.util.Set;
 
 import static game.admin.ConfigurationAdminPage.CONFIGURATION_KEY;
+import static game.utils.UrlUtil.getAdminUrlFor;
 
 /**
  * @author Patrick Kranz
  */
 public class ConfigurationController extends BaseController {
-    public static final String ADMIN_URL = "/admin/admin.html?item=configuration";
+    public static final String ADMIN_URL = getAdminUrlFor(ConfigurationAdminPage.TAB_ID);
     private static final String CONTROLLER_URL = "/admin/configureCIGame.html";
 
     private BuildConfigurationDao buildConfigurationDao;

@@ -2,7 +2,9 @@ package game.admin;
 
 import game.persistence.BuildConfigurationDao;
 import jetbrains.buildServer.controllers.admin.AdminPage;
-import jetbrains.buildServer.web.openapi.*;
+import jetbrains.buildServer.web.openapi.Groupable;
+import jetbrains.buildServer.web.openapi.PagePlaces;
+import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,8 +17,9 @@ import static jetbrains.buildServer.web.openapi.PositionConstraint.last;
  */
 public class ConfigurationAdminPage extends AdminPage {
     public static final String CONFIGURATION_KEY = "configs";
+    public static final String TAB_ID = "CI-Game-Configuration";
+
     private static final String JSP_PAGE = "/admin/configuration.jsp";
-    private static final String TAB_ID = "configuration";
     private static final String PAGE_TITLE = "CI-Game";
 
     private BuildConfigurationDao buildConfigurationDao;
@@ -30,7 +33,7 @@ public class ConfigurationAdminPage extends AdminPage {
     }
 
     @Override
-    public void fillModel(Map<String, Object> model, HttpServletRequest request) {
+    public void fillModel(@NotNull Map<String, Object> model, @NotNull HttpServletRequest request) {
         model.put(CONFIGURATION_KEY, buildConfigurationDao.getConfigurations());
     }
 
