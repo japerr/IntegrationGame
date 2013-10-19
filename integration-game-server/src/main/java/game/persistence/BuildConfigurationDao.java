@@ -1,59 +1,140 @@
 package game.persistence;
 
 import game.domain.BuildConfiguration;
-import jetbrains.buildServer.serverSide.SBuildServer;
+import jetbrains.buildServer.log.Loggers;
+import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildType;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
+
+import static game.utils.SqlUtils.closeQuietly;
 
 /**
  * @author Patrick Kranz
  */
 public class BuildConfigurationDao {
-    private static final String STORAGE_KEY = "ci-game";
-    private static final String ENABLED_KEY = "game-enabled";
+    private static final String LOAD_CONFIGS_SQL = "select BuildTypeId, "+
+            "IsActive from BuildConfiguration";
+    private static final String LOAD_CONFIG_SQL =
+            "select IsActive from BuildConfiguration where BuildTypeId = ?";
+    private static final String CONFIG_EXISTS_SQL =
+            "select count(BuildTypeId) from BuildConfiguration where BuildTypeId = ?";
+    private static final String SET_ISACTIVE_SQL =
+            "update BuildConfiguration set IsActive = ? where BuildTypeId = ?";
+    private static final String INSERT_CONFIG_SQL =
+            "insert into BuildConfiguration(BuildTypeId, IsActive) values(?, ?)";
 
-    private SBuildServer buildServer;
+    private final ProjectManager projectManager;
+    private final DataSource dataSource;
 
-    public BuildConfigurationDao(SBuildServer buildServer) {
-        this.buildServer = buildServer;
+    public BuildConfigurationDao(final ProjectManager projectManager, final DataSource dataSource) {
+        this.projectManager = projectManager;
+        this.dataSource = dataSource;
     }
 
     public List<BuildConfiguration> getConfigurations() {
         List<BuildConfiguration> configs = new ArrayList<BuildConfiguration>();
-        for (SBuildType build : buildServer.getProjectManager().getAllBuildTypes()) {
-            String booleanString = build.getCustomDataStorage(STORAGE_KEY).getValue(ENABLED_KEY);
-            configs.add(new BuildConfiguration(build.getFullName(), build.getBuildTypeId(), parseBoolean(booleanString)));
+        Map<String, String> idNameMapping = getRegisteredBuildTypes();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dataSource.getConnection();
+            statement = connection.prepareStatement(LOAD_CONFIGS_SQL);
+            ResultSet result = statement.executeQuery();
+            Map<String, Boolean> idActiveMapping = new HashMap<String, Boolean>();
+            while(result.next()) {
+                idActiveMapping.put(result.getString(1), result.getBoolean(2));
+            }
+            for (String externalId : idNameMapping.keySet()) {
+                boolean isActive = idActiveMapping.containsKey(externalId) ? idActiveMapping.get(externalId) : false;
+                configs.add(new BuildConfiguration(idNameMapping.get(externalId), externalId, isActive));
+            }
+        } catch (SQLException exception) {
+            Loggers.SERVER.error("Error while accessing database", exception);
+        } finally {
+            closeQuietly(statement);
+            closeQuietly(connection);
         }
+
         return configs;
+    }
+
+    private Map<String, String> getRegisteredBuildTypes() {
+        List<SBuildType> buildTypes = projectManager.getAllBuildTypes();
+        Map<String, String> idNameMapping = new HashMap<String, String>();
+        for (SBuildType buildType : buildTypes) {
+            idNameMapping.put(buildType.getExternalId(), buildType.getFullName());
+        }
+        return idNameMapping;
     }
 
     public Set<String> getBuildIds() {
         Set<String> buildIds = new HashSet<String>();
-        for (SBuildType build : buildServer.getProjectManager().getAllBuildTypes()) {
-            buildIds.add(build.getBuildTypeId());
+        for (SBuildType build : projectManager.getAllBuildTypes()) {
+            buildIds.add(build.getExternalId());
         }
         return buildIds;
     }
 
-    public boolean isEnabled(String buildId) {
-        SBuildType type = buildServer.getProjectManager().findBuildTypeById(buildId);
-        String enabledString = type.getCustomDataStorage(STORAGE_KEY).getValue(ENABLED_KEY);
-        return parseBoolean(enabledString);
-    }
-
-    public void setEnabled(String buildId, boolean isEnabled) {
-        SBuildType build = buildServer.getProjectManager().findBuildTypeById(buildId);
-        if (build != null) {
-            build.getCustomDataStorage(STORAGE_KEY).putValue(ENABLED_KEY,
-                    Boolean.toString(isEnabled));
+    public boolean isEnabled(String externalBuildTypeId) {
+        if (externalBuildTypeId == null || externalBuildTypeId.isEmpty()) {
+            return false;
         }
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dataSource.getConnection();
+            statement = connection.prepareStatement(LOAD_CONFIG_SQL);
+            statement.setString(1, externalBuildTypeId);
+            ResultSet result = statement.executeQuery();
+            if (result.first()) {
+                return result.getBoolean(1);
+            }
+        } catch (SQLException exception) {
+            Loggers.SERVER.error("Error while accessing database", exception);
+        } finally {
+            closeQuietly(statement);
+            closeQuietly(connection);
+        }
+        return false;
     }
 
-    private boolean parseBoolean(String booleanValue) {
-        return booleanValue != null && Boolean.parseBoolean(booleanValue);
+    public void setEnabled(String externalBuildTypeId, boolean isEnabled) {
+        if (externalBuildTypeId == null || externalBuildTypeId.isEmpty()) {
+            return;
+        }
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dataSource.getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.prepareStatement(CONFIG_EXISTS_SQL);
+            statement.setString(1, externalBuildTypeId);
+            ResultSet result = statement.executeQuery();
+            if (result.first() && result.getInt(1) == 1) {
+                closeQuietly(statement);
+                statement = connection.prepareStatement(SET_ISACTIVE_SQL);
+                statement.setBoolean(1, isEnabled);
+                statement.setString(2, externalBuildTypeId);
+                statement.executeUpdate();
+            } else {
+                closeQuietly(statement);
+                statement = connection.prepareStatement(INSERT_CONFIG_SQL);
+                statement.setString(1, externalBuildTypeId);
+                statement.setBoolean(2, isEnabled);
+                statement.executeUpdate();
+            }
+            connection.commit();
+        } catch (SQLException exception) {
+            Loggers.SQL.error("Error while accessing database", exception);
+        } finally {
+            closeQuietly(statement);
+            closeQuietly(connection);
+        }
     }
 }

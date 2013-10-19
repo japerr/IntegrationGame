@@ -8,5 +8,14 @@
 
     <bean id="buildConfigurationDao" class="game.persistence.BuildConfigurationDao" />
     <bean id="configurationAdminPage" class="game.admin.ConfigurationAdminPage" />
+    <bean id="Configuration" class="game.Configuration" />
+    <bean id="dataSourceFactory" class="game.persistence.database.DataSourceFactory" />
+    <bean id="dataSource" factory-bean="dataSourceFactory" factory-method="createDataSource" />
+    <bean id="flyway" class="com.googlecode.flyway.core.Flyway">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
 
+    <bean id="flywayWrapper" class="game.persistence.database.FlywayWrapper" init-method="migrate">
+        <constructor-arg index="0" ref="flyway" />
+    </bean>
 </beans>

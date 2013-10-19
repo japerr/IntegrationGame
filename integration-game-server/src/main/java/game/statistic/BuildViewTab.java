@@ -35,7 +35,7 @@ public class BuildViewTab extends BuildTypeTab {
     @Override
     public boolean isAvailable(@NotNull HttpServletRequest httpServletRequest) {
         SBuildType buildType = getBuildType(httpServletRequest);
-        return buildType != null && configuration.isEnabled(buildType.getBuildTypeId());
+        return buildType != null && configuration.isEnabled(buildType.getExternalId());
     }
 
     @Override
