@@ -190,6 +190,52 @@ public class BuildConfigurationDaoTest {
         assertThat(configurations.get(1).getBuildName(), is("Compile"));
     }
 
+    @Test
+    public void shouldNotAccessDatabaseWhenNullStringGiven() throws SQLException {
+        DataSource dataSourceMock = Mockito.mock(DataSource.class);
+        dao = new BuildConfigurationDao(projectManagerMock, dataSourceMock);
+        dao.updateBuildTypeId(null, "newId");
+        dao.updateBuildTypeId("oldId", null);
+        verify(dataSourceMock, never()).getConnection();
+    }
+
+    @Test
+    public void shouldNotAccessDatabaseWhenEmptyStringGiven()  throws SQLException {
+        DataSource dataSourceMock = Mockito.mock(DataSource.class);
+        dao = new BuildConfigurationDao(projectManagerMock, dataSourceMock);
+        dao.updateBuildTypeId("", "newId");
+        dao.updateBuildTypeId("oldId", "");
+        verify(dataSourceMock, never()).getConnection();
+    }
+
+    @Test
+    public void shouldUpdateBuildTypeIdWhenNewAndOldBuildTypeIdGiven() throws SQLException {
+        insertRow("testId", true);
+        insertRow("anotherTestId", false);
+        dao.updateBuildTypeId("testId", "newTestId");
+        Statement statement = dataSource.getConnection().createStatement();
+        ResultSet resultSet = statement.executeQuery(
+                "select count(*) from BuildConfiguration where BuildTypeId = 'newTestId'"
+        );
+
+        assertThat(resultSet.first(), is(true));
+        assertThat(resultSet.getInt(1), is(equalTo(1)));
+
+        resultSet = statement.executeQuery(
+                "select count(*) from BuildConfiguration where BuildTypeId = 'testId'"
+        );
+
+        assertThat(resultSet.first(), is(true));
+        assertThat(resultSet.getInt(1), is(equalTo(0)));
+
+        resultSet = statement.executeQuery(
+                "select count(*) from BuildConfiguration where BuildTypeId = 'anotherTestId'"
+        );
+
+        assertThat(resultSet.first(), is(true));
+        assertThat(resultSet.getInt(1), is(equalTo(1)));
+    }
+
     private void insertRow(String buildId, boolean isActive) {
         try {
             Connection connection = dataSource.getConnection();

@@ -6,10 +6,7 @@ import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildType;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 
 import static game.utils.SqlUtils.closeQuietly;
@@ -28,6 +25,8 @@ public class BuildConfigurationDao {
             "update BuildConfiguration set IsActive = ? where BuildTypeId = ?";
     private static final String INSERT_CONFIG_SQL =
             "insert into BuildConfiguration(BuildTypeId, IsActive) values(?, ?)";
+    private static final String UPDATE_BUILDID_SQL =
+            "update BuildConfiguration set BuildTypeId = ? where BuildTypeId = ?";
 
     private final ProjectManager projectManager;
     private final DataSource dataSource;
@@ -132,6 +131,26 @@ public class BuildConfigurationDao {
             connection.commit();
         } catch (SQLException exception) {
             Loggers.SQL.error("Error while accessing database", exception);
+        } finally {
+            closeQuietly(statement);
+            closeQuietly(connection);
+        }
+    }
+
+    public void updateBuildTypeId(String oldId, String newId) {
+        if (oldId == null || oldId.isEmpty() || newId == null || newId.isEmpty()) {
+            return;
+        }
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dataSource.getConnection();
+            statement = connection.prepareStatement(UPDATE_BUILDID_SQL);
+            statement.setString(1, newId);
+            statement.setString(2, oldId);
+            statement.executeUpdate();
+        } catch (SQLException exception) {
+            Loggers.SQL.error("Error updating build type id: ", exception);
         } finally {
             closeQuietly(statement);
             closeQuietly(connection);
