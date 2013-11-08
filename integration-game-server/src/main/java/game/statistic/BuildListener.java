@@ -53,7 +53,7 @@ public class BuildListener extends BuildServerAdapter {
     }
 
     private boolean buildShouldBeIgnored(SRunningBuild build) {
-        return build.isPersonal() || !buildConfigurationDao.isEnabled(build.getBuildTypeId());
+        return build.isPersonal() || !buildConfigurationDao.isEnabled(build.getBuildTypeExternalId());
     }
 
     private void addPointsToAllCommitters(SRunningBuild build, int points) {
