@@ -1,7 +1,7 @@
 package game.persistence;
 
 import game.domain.UserScore;
-import jetbrains.buildServer.users.SUser;
+import jetbrains.buildServer.users.User;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.*;
 public class UserScoreDaoTest {
 
     @Mock
-    private SUser userMock;
+    private User userMock;
 
     private UserScoreDao dao;
 
@@ -111,14 +111,27 @@ public class UserScoreDaoTest {
 
     @Test
     public void shouldUpdateUsernameWhenUserWithNewUsernameGiven() throws SQLException {
-        insertRow(6l, 3, "testUser");
-        SUser userMock = Mockito.mock(SUser.class);
-        when(userMock.getId()).thenReturn(6l);
+        insertRow(5l, 3, "testUser");
         when(userMock.getUsername()).thenReturn("newName");
         dao.ensureUserName(userMock);
         List<UserScore> scores = dao.getScores();
         assertEquals(1, scores.size());
         assertEquals("newName", scores.get(0).getUserName());
+    }
+
+    @Test
+    public void shouldRemoveUserFromDatabaseWhenUserToRemoveGiven() throws SQLException {
+        insertRow(5l, 3, "testUser");
+        dao.delete(userMock);
+        assertEquals(0, dao.getScores().size());
+    }
+
+    @Test
+    public void shouldNotAccessDatabaseWhenNoUserToDeleteGiven() throws SQLException {
+        DataSource dataSourceMock = Mockito.mock(DataSource.class);
+        dao = new UserScoreDao(dataSourceMock);
+        dao.delete(null);
+        verify(dataSourceMock, never()).getConnection();
     }
 
     private void insertRow(long userId, int score, String userName) throws SQLException {

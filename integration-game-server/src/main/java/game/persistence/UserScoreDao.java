@@ -2,7 +2,7 @@ package game.persistence;
 
 import game.domain.UserScore;
 import jetbrains.buildServer.log.Loggers;
-import jetbrains.buildServer.users.SUser;
+import jetbrains.buildServer.users.User;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -28,6 +28,8 @@ public class UserScoreDao {
             "select UserId, UserName, Score from Score";
     private static final String UPDATE_USERNAME_SQL =
             "update Score set UserName = ? where UserId = ?";
+    private static final String DELETE_SCORE_SQL =
+            "delete from Score where UserId = ?";
 
     private final DataSource dataSource;
 
@@ -35,7 +37,7 @@ public class UserScoreDao {
         this.dataSource = dateSource;
     }
 
-    public void addScore(SUser user, int score) {
+    public void addScore(User user, int score) {
         if (user == null) return;
         Connection connection = null;
         PreparedStatement statement = null;
@@ -69,7 +71,7 @@ public class UserScoreDao {
         }
     }
 
-    public void ensureUserName(SUser user) {
+    public void ensureUserName(User user) {
         if (user == null) return;
         Connection connection = null;
         PreparedStatement statement = null;
@@ -107,5 +109,22 @@ public class UserScoreDao {
             closeQuietly(connection);
         }
         return scores;
+    }
+
+    public void delete(User user) {
+        if (user == null) return;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dataSource.getConnection();
+            statement = connection.prepareStatement(DELETE_SCORE_SQL);
+            statement.setLong(1, user.getId());
+            statement.executeUpdate();
+        } catch (SQLException exception) {
+            Loggers.SQL.error("Error while loading user score: ", exception);
+        } finally {
+            closeQuietly(statement);
+            closeQuietly(connection);
+        }
     }
 }
