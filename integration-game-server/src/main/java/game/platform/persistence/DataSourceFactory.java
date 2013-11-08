@@ -1,6 +1,6 @@
-package game.persistence.database;
+package game.platform.persistence;
 
-import game.Configuration;
+import game.platform.Configuration;
 import org.h2.jdbcx.JdbcDataSource;
 
 import javax.sql.DataSource;

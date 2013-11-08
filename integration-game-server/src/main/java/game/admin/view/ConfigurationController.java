@@ -1,6 +1,6 @@
-package game.admin;
+package game.admin.view;
 
-import game.persistence.BuildConfigurationDao;
+import game.admin.persistence.BuildConfigurationDao;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
@@ -14,8 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Enumeration;
 import java.util.Set;
 
-import static game.admin.ConfigurationAdminPage.CONFIGURATION_KEY;
-import static game.utils.UrlUtil.getAdminUrlFor;
+import static game.admin.view.ConfigurationAdminPage.CONFIGURATION_KEY;
+import static game.platform.util.UrlUtil.getAdminUrlFor;
 
 /**
  * @author Patrick Kranz

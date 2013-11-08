@@ -1,4 +1,4 @@
-package game.domain;
+package game.admin.domain;
 
 /**
  * @author Patrick Kranz

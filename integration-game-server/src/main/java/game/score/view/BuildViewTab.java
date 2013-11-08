@@ -1,7 +1,7 @@
-package game.statistic;
+package game.score.view;
 
-import game.persistence.BuildConfigurationDao;
-import game.persistence.UserScoreDao;
+import game.admin.persistence.BuildConfigurationDao;
+import game.score.persistence.UserScoreDao;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.users.SUser;

@@ -1,4 +1,4 @@
-package game.utils;
+package game.platform.persistence.util;
 
 import jetbrains.buildServer.log.Loggers;
 

@@ -1,7 +1,7 @@
-package game.statistic;
+package game.score.listener;
 
-import game.persistence.BuildConfigurationDao;
-import game.persistence.UserScoreDao;
+import game.admin.persistence.BuildConfigurationDao;
+import game.score.persistence.UserScoreDao;
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
 import jetbrains.buildServer.serverSide.SBuildServer;

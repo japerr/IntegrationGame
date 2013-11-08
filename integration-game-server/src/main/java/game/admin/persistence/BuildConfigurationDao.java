@@ -1,6 +1,6 @@
-package game.persistence;
+package game.admin.persistence;
 
-import game.domain.BuildConfiguration;
+import game.admin.domain.BuildConfiguration;
 import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildType;
@@ -12,7 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-import static game.utils.SqlUtils.closeQuietly;
+import static game.platform.persistence.util.SqlUtils.closeQuietly;
 
 /**
  * @author Patrick Kranz

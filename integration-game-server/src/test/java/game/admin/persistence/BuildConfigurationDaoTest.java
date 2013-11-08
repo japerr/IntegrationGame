@@ -1,6 +1,6 @@
-package game.persistence;
+package game.admin.persistence;
 
-import game.domain.BuildConfiguration;
+import game.admin.domain.BuildConfiguration;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildType;
 import org.h2.jdbcx.JdbcDataSource;

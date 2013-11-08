@@ -1,5 +1,6 @@
-package game.persistence;
+package game.admin;
 
+import game.admin.persistence.BuildConfigurationDao;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
 import jetbrains.buildServer.serverSide.SBuildType;
 import org.jetbrains.annotations.NotNull;

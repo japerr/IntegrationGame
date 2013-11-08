@@ -1,4 +1,4 @@
-package game;
+package game.platform;
 
 import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.ServerPaths;

@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans default-autowire="constructor">
-    <bean id="buildViewTab" class="game.statistic.BuildViewTab" />
-    <bean id="userScoreDao" class="game.persistence.UserScoreDao" />
-    <bean id="buildListener" class="game.statistic.BuildListener" />
-    <bean id="userListener" class="game.UserChangeListener" init-method="registerListener"/>
-    <bean id="configurationController" class="game.admin.ConfigurationController" />
+    <!-- Administration -->
+    <bean id="configurationController" class="game.admin.view.ConfigurationController" />
+    <bean id="buildConfigurationDao" class="game.admin.persistence.BuildConfigurationDao" />
+    <bean id="configurationAdminPage" class="game.admin.view.ConfigurationAdminPage" />
+    <bean id="buildTypeConfigurationServerListener" class="game.admin.BuildConfigurationServerListener" />
 
-    <bean id="buildConfigurationDao" class="game.persistence.BuildConfigurationDao" />
-    <bean id="configurationAdminPage" class="game.admin.ConfigurationAdminPage" />
-    <bean id="Configuration" class="game.Configuration" />
-    <bean id="BuildTypeConfigurationServerListener" class="game.persistence.BuildConfigurationServerListener" />
-    <bean id="dataSourceFactory" class="game.persistence.database.DataSourceFactory" />
+    <!-- Score counting -->
+    <bean id="buildViewTab" class="game.score.view.BuildViewTab" />
+    <bean id="userScoreDao" class="game.score.persistence.UserScoreDao" />
+    <bean id="buildListener" class="game.score.listener.BuildListener" />
+    <bean id="userListener" class="game.score.listener.UserChangeListener" init-method="registerListener"/>
+
+    <!-- Platform -->
+    <bean id="configuration" class="game.platform.Configuration" />
+
+    <!-- Persistence -->
+    <bean id="dataSourceFactory" class="game.platform.persistence.DataSourceFactory" />
     <bean id="dataSource" factory-bean="dataSourceFactory" factory-method="createDataSource" />
     <bean id="flyway" class="com.googlecode.flyway.core.Flyway">
         <property name="dataSource" ref="dataSource" />
     </bean>
 
-    <bean id="flywayWrapper" class="game.persistence.database.FlywayWrapper" init-method="migrate">
+    <bean id="flywayWrapper" class="game.platform.persistence.FlywayWrapper" init-method="migrate">
         <constructor-arg index="0" ref="flyway" />
     </bean>
 </beans>

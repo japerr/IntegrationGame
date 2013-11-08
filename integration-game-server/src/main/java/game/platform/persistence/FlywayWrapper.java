@@ -1,4 +1,4 @@
-package game.persistence.database;
+package game.platform.persistence;
 
 import com.googlecode.flyway.core.Flyway;
 

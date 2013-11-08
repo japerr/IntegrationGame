@@ -1,6 +1,7 @@
-package game.persistence;
+package game.game.score.persistence;
 
-import game.domain.UserScore;
+import game.score.domain.UserScore;
+import game.score.persistence.UserScoreDao;
 import jetbrains.buildServer.users.User;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Before;

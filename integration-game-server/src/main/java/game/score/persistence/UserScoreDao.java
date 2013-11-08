@@ -1,6 +1,6 @@
-package game.persistence;
+package game.score.persistence;
 
-import game.domain.UserScore;
+import game.score.domain.UserScore;
 import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.users.User;
 
@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static game.utils.SqlUtils.closeQuietly;
+import static game.platform.persistence.util.SqlUtils.closeQuietly;
 
 /**
  * @author Patrick Kranz

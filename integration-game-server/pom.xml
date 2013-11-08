@@ -9,6 +9,7 @@
     </parent>
     <artifactId>integration-game-server</artifactId>
     <packaging>jar</packaging>
+
     <dependencies>
         <!-- TeamCity dependencies -->
         <dependency>

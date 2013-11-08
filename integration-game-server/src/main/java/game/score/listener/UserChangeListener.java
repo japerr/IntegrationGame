@@ -1,6 +1,6 @@
-package game;
+package game.score.listener;
 
-import game.persistence.UserScoreDao;
+import game.score.persistence.UserScoreDao;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.users.User;
 import jetbrains.buildServer.users.UserModelListener;

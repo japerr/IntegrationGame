@@ -1,6 +1,6 @@
-package game.admin;
+package game.admin.view;
 
-import game.persistence.BuildConfigurationDao;
+import game.admin.persistence.BuildConfigurationDao;
 import jetbrains.buildServer.controllers.admin.AdminPage;
 import jetbrains.buildServer.web.openapi.Groupable;
 import jetbrains.buildServer.web.openapi.PagePlaces;

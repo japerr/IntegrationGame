@@ -1,4 +1,4 @@
-package game.utils;
+package game.platform.util;
 
 /**
  * @author Patrick Kranz
