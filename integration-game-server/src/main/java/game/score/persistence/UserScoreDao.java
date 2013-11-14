@@ -1,18 +1,15 @@
 package game.score.persistence;
 
+import game.platform.persistence.SqlBuilder;
 import game.score.domain.UserScore;
 import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.users.User;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static game.platform.persistence.util.SqlUtils.closeQuietly;
 
 /**
  * @author Patrick Kranz
@@ -39,64 +36,51 @@ public class UserScoreDao {
 
     public void addScore(User user, int score) {
         if (user == null) return;
-        Connection connection = null;
-        PreparedStatement statement = null;
+        SqlBuilder sqlBuilder = null;
         try {
-            connection = dataSource.getConnection();
-            connection.setAutoCommit(false);
-            statement = connection.prepareStatement(GET_SCORE_SQL);
-            statement.setLong(1, user.getId());
-            ResultSet result = statement.executeQuery();
+            sqlBuilder = new SqlBuilder(dataSource);
+            ResultSet result = sqlBuilder.withTransaction().prepareStatement(GET_SCORE_SQL)
+                    .withParameter(user.getId()).resultSet();
             if (result.first()) {
                 int currentScore = result.getInt(1);
-                closeQuietly(statement);
-                statement = connection.prepareStatement(UPDATE_SCORE_SQL);
-                statement.setInt(1, currentScore + score);
-                statement.setLong(2, user.getId());
-                statement.executeUpdate();
+                sqlBuilder.continueWith().prepareStatement(UPDATE_SCORE_SQL)
+                        .withParameter(currentScore + score)
+                        .withParameter(user.getId()).update();
             } else {
-                closeQuietly(statement);
-                statement = connection.prepareStatement(INSERT_SCORE_SQL);
-                statement.setLong(1, user.getId());
-                statement.setInt(2, score);
-                statement.setString(3, user.getUsername());
-                statement.executeUpdate();
+                sqlBuilder.continueWith().prepareStatement(INSERT_SCORE_SQL)
+                        .withParameter(user.getId())
+                        .withParameter(score).withParameter(user.getUsername())
+                        .update();
             }
-            connection.commit();
+            sqlBuilder.commit();
         } catch (SQLException exception) {
             Loggers.SQL.error("Error while saving score: ", exception);
         } finally {
-            closeQuietly(statement);
-            closeQuietly(connection);
+            closeBuilder(sqlBuilder);
         }
     }
 
     public void ensureUserName(User user) {
         if (user == null) return;
-        Connection connection = null;
-        PreparedStatement statement = null;
+        SqlBuilder sqlBuilder = null;
         try {
-            connection = dataSource.getConnection();
-            statement = connection.prepareStatement(UPDATE_USERNAME_SQL);
-            statement.setString(1, user.getUsername());
-            statement.setLong(2, user.getId());
-            statement.executeUpdate();
+            sqlBuilder = new SqlBuilder(dataSource);
+            sqlBuilder.prepareStatement(UPDATE_USERNAME_SQL)
+                    .withParameter(user.getUsername()).withParameter(user.getId()).update();
         } catch (SQLException exception) {
             Loggers.SQL.error("Error while updating user: ", exception);
         } finally {
-            closeQuietly(statement);
-            closeQuietly(connection);
+            closeBuilder(sqlBuilder);
         }
     }
 
     public List<UserScore> getScores() {
         List<UserScore> scores = new ArrayList<UserScore>();
-        Connection connection = null;
-        PreparedStatement statement = null;
+        SqlBuilder sqlBuilder = null;
         try {
-            connection = dataSource.getConnection();
-            statement = connection.prepareStatement(LOAD_SCORE_SQL);
-            ResultSet resultSet = statement.executeQuery();
+            sqlBuilder = new SqlBuilder(dataSource);
+            ResultSet resultSet = sqlBuilder
+                    .prepareStatement(LOAD_SCORE_SQL).resultSet();
             while (resultSet.next()) {
                 String userName = resultSet.getString(2);
                 int score = resultSet.getInt(3);
@@ -105,26 +89,28 @@ public class UserScoreDao {
         } catch (SQLException exception) {
             Loggers.SQL.error("Error while loading user score: ", exception);
         } finally {
-            closeQuietly(statement);
-            closeQuietly(connection);
+            closeBuilder(sqlBuilder);
         }
         return scores;
     }
 
     public void delete(User user) {
         if (user == null) return;
-        Connection connection = null;
-        PreparedStatement statement = null;
+        SqlBuilder sqlBuilder = null;
         try {
-            connection = dataSource.getConnection();
-            statement = connection.prepareStatement(DELETE_SCORE_SQL);
-            statement.setLong(1, user.getId());
-            statement.executeUpdate();
+            sqlBuilder = new SqlBuilder(dataSource);
+            sqlBuilder.prepareStatement(DELETE_SCORE_SQL)
+                    .withParameter(user.getId()).update();
         } catch (SQLException exception) {
             Loggers.SQL.error("Error while loading user score: ", exception);
         } finally {
-            closeQuietly(statement);
-            closeQuietly(connection);
+            closeBuilder(sqlBuilder);
+        }
+    }
+
+    private void closeBuilder(SqlBuilder builder) {
+        if (builder != null) {
+            builder.close();
         }
     }
 }
