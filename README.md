@@ -14,7 +14,8 @@ Issue 'mvn package' command from the root project to build the plugin.
 Resulting package integration-game.zip will be placed in 'target' directory.
 
 ### Install
-To install the plugin, put the zip archive to 'plugins' dir under TeamCity data directory and restart the server.
+To install the plugin, put the zip archive to 'plugins' dir under TeamCity data directory
+(on Unix like systems ~/.BuildServer) and restart the server.
 
 ### Current State
 What is implemented is a very minimum viable product:
@@ -24,8 +25,8 @@ enabled for. It will show you in a very simple way the current score for all use
 point for a good build and you loose five points for breaking the build. It is a very simple check, so if
 you commit in a broken build and it stays broken you will again loose five points. 
 
-Currently, there is no user mapping, so the username of the VCS needs to match the username in TeamCity for this
-to work.
+For this to work correctly, you need to have the users configured in TeamCity and correctly map the TeamCity user
+to the corresponding VCS name (e.g. Git name).
 
-Although there is only one global scoure, you can configure in the administration section for which
+Although there is only one global score, you can configure in the administration section for which
 build configurations scoring is enabled.
